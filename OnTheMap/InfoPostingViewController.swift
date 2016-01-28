@@ -38,6 +38,7 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextView
     @IBOutlet weak var bottomButton: UIButton!  //Button will change function and title based on whether location or URL is being input
     @IBOutlet weak var cancelButton: UIButton!  //Cancel the info posting
 
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
     
 //MARK: - View Controller lifecycle
@@ -66,7 +67,7 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextView
             
             userLocationString = locationTextView.text
             
-            let activityView = showProgressIndicator()
+            showProgressIndicator()
             
             //Try to find the user location
             findEnteredLocation(userLocationString, completionHandler: { (coordinates) -> Void in
@@ -81,7 +82,7 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextView
                         
                         self.displayMapWithUserLocation(self.userLocation)
                         
-                        self.unshowProgressIndicator(activityView)
+                        self.unshowProgressIndicator()
                         
                         self.locationTextView.text = ""
                         self.locationTextView.editable = false
@@ -98,7 +99,7 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextView
                 //Invalid location
                 } else {
                     
-                    self.unshowProgressIndicator(activityView)
+                    self.unshowProgressIndicator()
                     
                     //Display alert message for invalid location
                     self.displayAlertMessage("Could not geocode the location")
@@ -110,7 +111,7 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextView
         //Bottom button function is to submit the location and URL
         } else {
             
-            let activityView = showProgressIndicator()
+            showProgressIndicator()
             
             //Carry out submit action
             if URLTextView.text != "" {
@@ -135,25 +136,31 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextView
                     
                     OTMClient.sharedInstance().addStudentInformationToPARSE(studentInfo, completionHandler: { (success, objectId, error) -> Void in
                         
-                        self.unshowProgressIndicator(activityView)
+                        self.unshowProgressIndicator()
                         
-                        if let error = error {
-                            
-                            if error.localizedDescription.containsString("The Internet connection appears to be offline")  {
+                        guard (error == nil) else {
+                            if error!.localizedDescription.containsString("The Internet connection appears to be offline")  {
                                 self.displayAlertMessage("The internet connection appears to be offline")
+                            } else {
+                                self.displayAlertMessage("Error posting student information")
                             }
+                            return
                         }
                         
-                        if !success {
+                        guard (success == true) else {
                             self.displayAlertMessage("Error posting student information")
-                        } else {
-                            if let objectId = objectId {
-                                print("Posted new location: \(studentInfo)")
-                                OTMClient.sharedInstance().objectID = objectId     //Save the objectId
-                            } else {
-                                OTMClient.sharedInstance().objectID = nil
-                            }
+                            return
                         }
+                        
+                        guard (objectId != nil) else {
+                            OTMClient.sharedInstance().objectID = nil
+                            self.displayAlertMessage("Error retrieving object id from student information")
+                            return
+                        }
+                        
+                        print("Posted new location: \(studentInfo)")
+                        OTMClient.sharedInstance().objectID = objectId!  //Save the objectId
+                        self.dismissViewControllerAnimated(true, completion: nil)
                         
                     })
                     
@@ -163,28 +170,28 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextView
                     
                     OTMClient.sharedInstance().updateStudentInformationInPARSE(OTMClient.sharedInstance().objectID!, studentInfo: studentInfo, completionHandler: { (success, error) -> Void in
                         
-                        self.unshowProgressIndicator(activityView)
+                        self.unshowProgressIndicator()
                         
-                        if let error = error {
-                            
-                            if error.localizedDescription.containsString("The Internet connection appears to be offline")  {
+                        guard (error == nil) else {
+                            if error!.localizedDescription.containsString("The Internet connection appears to be offline")  {
                                 self.displayAlertMessage("The internet connection appears to be offline")
+                            } else {
+                                self.displayAlertMessage("Error updating student information")
                             }
-
+                            return
+                        }
+                    
+                        guard (success == true) else {
+                            self.displayAlertMessage("Error updating student information")
+                            return
                         }
                         
-                        if !success {
-                            self.displayAlertMessage("Error updating student information")
-                        } else {
-                            print("Updated location for objectid \(OTMClient.sharedInstance().objectID): \(studentInfo)")
-                        }
+                        print("Updated location for objectid \(OTMClient.sharedInstance().objectID): \(studentInfo)")
+                        self.dismissViewControllerAnimated(true, completion: nil)
                         
                     })
                     
                 }
-                
-                dismissViewControllerAnimated(true, completion: nil)
-                
                 
             } else {
                 
@@ -193,7 +200,6 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextView
             }
             
         }
-        
         
     }
     
@@ -262,30 +268,23 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextView
         
     }
     
-    func showProgressIndicator() -> UIActivityIndicatorView {
+    func showProgressIndicator() {
         
         //Display progress indicator
         
-        let activityView = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
-        
         dispatch_async(dispatch_get_main_queue()) { () -> Void in
-            //Display a progress indicator in the center
-            activityView.center = self.view.center
-            activityView.startAnimating()
-            self.view.addSubview(activityView)
+
+            self.activityIndicator.startAnimating()
         }
-        
-        return activityView
         
     }
     
-    func unshowProgressIndicator(activityView: UIActivityIndicatorView) {
+    func unshowProgressIndicator() {
         
         //When downloading is complete remove progress indicator
         
         dispatch_async(dispatch_get_main_queue()) { () -> Void in
-            activityView.stopAnimating()
-            activityView.removeFromSuperview()
+            self.activityIndicator.stopAnimating()
         }
         
     }

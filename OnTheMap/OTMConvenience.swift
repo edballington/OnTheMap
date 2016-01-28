@@ -31,6 +31,7 @@ extension OTMClient {
             /* Send error values to completion handler */
             if let error = error {
                 completionHandler(sessionID: nil, accountKey: nil, error: error)
+                
             } else {
                 if let sessionID = JSONResult[OTMClient.JSONResponseKeys.Session]??[OTMClient.JSONResponseKeys.sessionID] as? String {
                     
@@ -208,7 +209,7 @@ extension OTMClient {
                 completionHandler(success: false, objectId: nil, error: error)
             }
             
-            if let results = JSONResult[OTMClient.JSONResponseKeys.objectID] as? String {
+            if let results = JSONResult?[OTMClient.JSONResponseKeys.objectID] as? String {
                 //Return the ObjectID
                 completionHandler(success: true, objectId: results, error: nil)
             } else {
@@ -234,16 +235,21 @@ extension OTMClient {
         
         taskForParsePUTMethod(OTMClient.Methods.Location, objectID: objectID!, jsonBody: jsonBody) { (result, error) -> Void in
             
-            if let error = error {
+            guard (error == nil) else {
                 print("Error updating student location in PARSE: \(error)")
                 completionHandler(success: false, error: error)
-            } else {
-                completionHandler(success: true, error: nil)
+                return
             }
             
+            guard (result != nil) else {
+                completionHandler(success: false, error: nil)
+                return
+            }
+            
+            completionHandler(success: true, error: nil)
+            
         }
-        
-        
+    
         }
 
 }

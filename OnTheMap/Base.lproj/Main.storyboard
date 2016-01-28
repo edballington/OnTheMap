@@ -246,14 +246,20 @@
                                             <outlet property="delegate" destination="Apc-fu-Bqd" id="It9-j7-tOf"/>
                                         </connections>
                                     </textView>
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="hEt-4F-FNn">
+                                        <rect key="frame" x="282" y="167" width="37" height="37"/>
+                                        <color key="color" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                    </activityIndicatorView>
                                 </subviews>
                                 <color key="backgroundColor" red="0.40000000000000002" green="0.59999999999999998" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstItem="3CX-h3-DAt" firstAttribute="top" secondItem="iN1-hE-VYc" secondAttribute="bottom" constant="8" symbolic="YES" id="1c4-nn-Pk4"/>
                                     <constraint firstItem="iN1-hE-VYc" firstAttribute="top" secondItem="m03-xF-6TB" secondAttribute="top" constant="20" symbolic="YES" id="AgH-QL-FRx"/>
+                                    <constraint firstItem="hEt-4F-FNn" firstAttribute="centerY" secondItem="iN1-hE-VYc" secondAttribute="centerY" id="B0O-Tn-CSf"/>
                                     <constraint firstItem="3CX-h3-DAt" firstAttribute="leading" secondItem="m03-xF-6TB" secondAttribute="leading" id="G05-7x-nxq"/>
                                     <constraint firstItem="3CX-h3-DAt" firstAttribute="height" secondItem="m03-xF-6TB" secondAttribute="height" multiplier="0.2" id="Kgo-4C-SU8"/>
                                     <constraint firstAttribute="trailing" secondItem="3CX-h3-DAt" secondAttribute="trailing" id="Y9y-yL-Lsq"/>
+                                    <constraint firstItem="hEt-4F-FNn" firstAttribute="centerX" secondItem="iN1-hE-VYc" secondAttribute="centerX" id="bF5-Oz-MMg"/>
                                     <constraint firstItem="iN1-hE-VYc" firstAttribute="trailing" secondItem="m03-xF-6TB" secondAttribute="trailingMargin" id="hD9-tg-prP"/>
                                     <constraint firstItem="iN1-hE-VYc" firstAttribute="leading" secondItem="m03-xF-6TB" secondAttribute="leadingMargin" id="nAg-XB-YIK"/>
                                     <constraint firstAttribute="bottom" secondItem="3CX-h3-DAt" secondAttribute="bottom" id="nRt-mD-dV1"/>
@@ -274,6 +280,7 @@
                     </view>
                     <connections>
                         <outlet property="URLTextView" destination="llL-p1-QkS" id="mVR-6b-2Ts"/>
+                        <outlet property="activityIndicator" destination="hEt-4F-FNn" id="tbU-Vd-DfD"/>
                         <outlet property="bottomButton" destination="8UC-Fd-9SA" id="VCd-Wj-uyL"/>
                         <outlet property="buttonFrameView" destination="3CX-h3-DAt" id="hex-bE-hMd"/>
                         <outlet property="cancelButton" destination="2qn-QS-HHe" id="YeI-ef-sAW"/>
